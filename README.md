@@ -1,11 +1,20 @@
-# 🏥 SGP Medical — Système de Gestion de Patients
+  SGP Medical — Système de Gestion de Patients
+  SGP Medical est une application web médicale construite avec Angular 17 .
 
-> Projet Angular 101 — Atelier pratique 4 heures par **Sabri BARBARIA**  
-> Application médicale de démonstration construite avec Angular 17
+  Ce que fait l'application
+
+ Lister les patients avec recherche et filtres
+ Consulter le dossier complet d'un patient (constantes vitales, allergies, traitements, antécédents)
+ Créer / modifier un patient via un formulaire avec validation
+ Gérer les urgences avec niveaux de triage CCMU (vert → rouge)
+ Masquer les données sensibles (INS, téléphone, email) selon le rôle
+ Tableau de bord avec statistiques et alertes en temps réel
+
+
 
 ---
 
-## 🚀 Démarrage rapide
+ Démarrage rapide
 
 ### Prérequis
 - Node.js 18+ LTS
@@ -24,7 +33,7 @@ L'application est disponible sur **http://localhost:4200**
 
 ---
 
-## 📁 Architecture du projet
+##  Architecture du projet
 
 ```
 sgp-medical/src/app/
@@ -86,7 +95,7 @@ sgp-medical/src/app/
 
 ---
 
-## 🏥 Standards médicaux implémentés
+## Standards médicaux implémentés
 
 - **FHIR R4** — Mapping Patient ↔ FhirPatient, PatientApiService
 - **INS** — Identité Nationale de Santé, pipe de formatage + masquage
@@ -98,18 +107,18 @@ sgp-medical/src/app/
 
 ---
 
-## 🔒 Bonnes pratiques de sécurité
+## Bonnes pratiques de sécurité
 
-- ❌ Jamais de données sensibles en `localStorage` ou `sessionStorage`
-- ✅ Token JWT injecté via intercepteur HTTP (jamais en dur)
-- ✅ Journalisation de tous les accès aux dossiers patients
-- ✅ Masquage par défaut des données sensibles (INS, email, téléphone)
-- ✅ Guards de route par rôle (RBAC)
-- ✅ CanDeactivate sur les formulaires non sauvegardés
+- Jamais de données sensibles en `localStorage` ou `sessionStorage`
+-  Token JWT injecté via intercepteur HTTP (jamais en dur)
+-  Journalisation de tous les accès aux dossiers patients
+-  Masquage par défaut des données sensibles (INS, email, téléphone)
+-  Guards de route par rôle (RBAC)
+-  CanDeactivate sur les formulaires non sauvegardés
 
 ---
 
-## 🛠️ Commandes utiles
+##  Commandes utiles
 
 ```bash
 # Démarrer le serveur de développement
@@ -133,7 +142,7 @@ ng generate service features/patients/services/mon-service
 
 ---
 
-## 📚 Ressources
+##  Ressources
 
 | Ressource | URL |
 |-----------|-----|
@@ -145,7 +154,7 @@ ng generate service features/patients/services/mon-service
 
 ---
 
-## ⚠️ Avertissement
+##  Avertissement
 
 > Les données patients utilisées dans ce projet sont **entièrement fictives** et ne constituent pas des données médicales réelles. Ce projet est à des fins **pédagogiques uniquement**.
 
