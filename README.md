@@ -158,6 +158,5 @@ ng generate service features/patients/services/mon-service
 
 > Les données patients utilisées dans ce projet sont **entièrement fictives** et ne constituent pas des données médicales réelles. Ce projet est à des fins **pédagogiques uniquement**.
 
----
 
 *Angular 101 Medical — Sabri BARBARIA — CI-GBM2-TTIS*
