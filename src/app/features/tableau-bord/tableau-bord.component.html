@@ -1,0 +1,112 @@
+<!-- tableau-bord.component.html -->
+<div class="tableau-bord fade-in">
+
+  <!-- Bienvenue -->
+  <div class="welcome-banner">
+    <div>
+      <h1>Bonjour, Dr. {{ nomUtilisateur }} 👋</h1>
+      <p class="text-muted">{{ dateActuelle | date:'EEEE dd MMMM yyyy' }} · Système de Gestion de Patients</p>
+    </div>
+    <a routerLink="/patients/nouveau" class="btn btn--primary">
+      + Nouveau patient
+    </a>
+  </div>
+
+  <!-- Alertes urgences actives -->
+  <div class="urgences-section" *ngIf="patientsUrgents.length > 0">
+    <div class="alert alert--danger">
+      🚨 <strong>{{ patientsUrgents.length }} patient(s) nécessitant une attention urgente</strong>
+    </div>
+    <div class="urgences-grid">
+      <div class="urgence-card"
+           *ngFor="let p of patientsUrgents"
+           [class.urgence-card--rouge]="p.niveauUrgence === 'rouge'"
+           [class.urgence-card--orange]="p.niveauUrgence === 'orange'"
+           (click)="ouvrirDossier(p)">
+        <div class="urgence-card__header">
+          <span class="badge" [ngClass]="'badge--' + p.niveauUrgence">
+            {{ p.niveauUrgence === 'rouge' ? '🔴 URGENT' : '🟠 GRAVE' }}
+          </span>
+          <span class="text-xs text-muted">{{ p.statut }}</span>
+        </div>
+        <strong>{{ p.prenom }} {{ p.nom }}</strong>
+        <p class="text-sm text-muted">
+          {{ p.dateNaissance | age }} ans ·
+          {{ p.allergies.length > 0 ? '⚠️ Allergies' : 'Pas d\'allergie connue' }}
+        </p>
+        <div class="urgence-card__constantes" *ngIf="p.dernieresConstantes as c">
+          <span [class.critique]="c.saturationO2 && c.saturationO2 < 90">SpO₂ {{ c.saturationO2 }}%</span>
+          <span [class.critique]="c.tensionSystolique && c.tensionSystolique > 180">TA {{ c.tensionSystolique }}/{{ c.tensionDiastolique }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-card--blue">
+      <div class="kpi-card__icon">👥</div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistiques.total ?? 0 }}</span>
+        <span class="kpi-card__label">Total patients</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--green">
+      <div class="kpi-card__icon">✅</div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistiques.actifs ?? 0 }}</span>
+        <span class="kpi-card__label">Patients actifs</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--red">
+      <div class="kpi-card__icon">🚨</div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistiques.urgencesRouge ?? 0 }}</span>
+        <span class="kpi-card__label">Urgences rouges</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--orange">
+      <div class="kpi-card__icon">⚠️</div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistiques.urgencesOrange ?? 0 }}</span>
+        <span class="kpi-card__label">Urgences oranges</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-card--yellow">
+      <div class="kpi-card__icon">🩺</div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ statistiques.avecAllergies ?? 0 }}</span>
+        <span class="kpi-card__label">Avec allergies</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liens rapides -->
+  <div class="quick-links">
+    <h2>Accès rapide</h2>
+    <div class="quick-links__grid">
+      <a routerLink="/patients" class="quick-link-card">
+        <span class="quick-link-card__icon">📋</span>
+        <span>Liste patients</span>
+      </a>
+      <a routerLink="/patients/nouveau" class="quick-link-card">
+        <span class="quick-link-card__icon">➕</span>
+        <span>Nouveau patient</span>
+      </a>
+      <a routerLink="/patients" [queryParams]="{urgence: 'rouge'}" class="quick-link-card quick-link-card--danger">
+        <span class="quick-link-card__icon">🚨</span>
+        <span>Urgences rouges</span>
+      </a>
+      <a routerLink="/patients" [queryParams]="{urgence: 'orange'}" class="quick-link-card quick-link-card--warning">
+        <span class="quick-link-card__icon">🟠</span>
+        <span>Urgences oranges</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Pied de page RGPD -->
+  <div class="rgpd-notice">
+    🔒 Conformité HDS · RGPD · FHIR R4 — Toutes les consultations de dossiers sont journalisées.
+    Les données patients sont des données fictives à des fins pédagogiques.
+  </div>
+</div>

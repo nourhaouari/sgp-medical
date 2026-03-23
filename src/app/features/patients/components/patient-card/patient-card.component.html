@@ -1,0 +1,118 @@
+<!-- src/app/features/patients/components/patient-card/patient-card.component.html -->
+<div class="patient-card" [class.urgence-rouge]="patient.niveauUrgence === 'rouge'" (click)="selectionner()">
+
+  <!-- En-tête : avatar + identité -->
+  <div class="patient-card__header">
+    <div class="avatar" [style.background-color]="couleurUrgence">
+      {{ initiales }}
+    </div>
+    <div class="patient-card__identity">
+      <h3 class="patient-card__name">{{ patient.prenom }} {{ patient.nom }}</h3>
+      <p class="patient-card__meta">
+        {{ age }} ans &nbsp;·&nbsp;
+        <span class="sexe">{{ patient.sexe === 'M' ? 'Homme' : patient.sexe === 'F' ? 'Femme' : 'Autre' }}</span>
+        <span *ngIf="patient.groupeSanguin" class="groupe-sanguin">
+          &nbsp;·&nbsp; {{ patient.groupeSanguin }}
+          <span *ngIf="patient.groupeSanguin === 'O-'">(Donneur universel)</span>
+          <span *ngIf="patient.groupeSanguin === 'AB+'">(Receveur universel)</span>
+        </span>
+      </p>
+    </div>
+    <!-- Badge urgence CCMU -->
+    <div class="urgence-badge" [ngSwitch]="patient.niveauUrgence">
+      <span *ngSwitchCase="'vert'"   class="badge badge--vert">CCMU 1</span>
+      <span *ngSwitchCase="'jaune'"  class="badge badge--jaune">CCMU 2</span>
+      <span *ngSwitchCase="'orange'" class="badge badge--orange">CCMU 3</span>
+      <span *ngSwitchCase="'rouge'"  class="badge badge--rouge">🚨 URGENT</span>
+      <span *ngSwitchDefault         class="badge badge--gris">Non évalué</span>
+    </div>
+  </div>
+
+  <!-- Corps : INS, statut, allergies -->
+  <div class="patient-card__body">
+    <div class="info-row">
+      <span class="label">INS</span>
+      <span class="value ins"
+            [appSensitiveData]="!showSensitiveData"
+            [patientId]="patient.id">
+        {{ patient.ins | insFormat }}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="label">Statut</span>
+      <span class="badge" [ngClass]="'badge--' + patient.statut">{{ patient.statut }}</span>
+    </div>
+    <div class="info-row" *ngIf="patient.telephone">
+      <span class="label">Tél.</span>
+      <span class="value"
+            [appSensitiveData]="!showSensitiveData"
+            [patientId]="patient.id">
+        {{ patient.telephone }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Allergies -->
+  <div class="patient-card__allergies" *ngIf="patient.allergies.length > 0">
+    <span class="allergie-icon" [title]="patient.allergies.map(a => a.substance).join(', ')">
+      ⚠️ {{ patient.allergies.length }} allergie{{ patient.allergies.length > 1 ? 's' : '' }}
+      <span class="allergie-detail">
+        <span *ngFor="let a of patient.allergies; let last = last">
+          {{ a.substance }} ({{ a.severite }})<span *ngIf="!last">, </span>
+        </span>
+      </span>
+    </span>
+  </div>
+
+  <!-- Constantes critiques -->
+  <div class="patient-card__constantes"
+       *ngIf="patient.dernieresConstantes as c">
+    <span class="constante"
+          [ngClass]="{'critique': c.saturationO2 && c.saturationO2 < 90}">
+      SpO₂ : {{ c.saturationO2 ?? 'N/A' }}%
+    </span>
+    <span class="constante"
+          [ngClass]="{'critique': c.tensionSystolique && c.tensionSystolique > 180}">
+      TA : {{ c.tensionSystolique ?? '--' }}/{{ c.tensionDiastolique ?? '--' }} mmHg
+    </span>
+    <span class="constante">
+      FC : {{ c.frequenceCardiaque ?? 'N/A' }} bpm
+    </span>
+  </div>
+
+  <!-- Actions -->
+  <div class="patient-card__actions" (click)="$event.stopPropagation()">
+    <a [routerLink]="['/patients', patient.id]" class="btn btn--secondary btn--sm">
+      Dossier
+    </a>
+    <a [routerLink]="['/patients', patient.id, 'modifier']" class="btn btn--secondary btn--sm">
+      Modifier
+    </a>
+    <button class="btn btn--danger btn--sm"
+            (click)="ouvrirModalUrgence($event)">
+      🚨 Urgence
+    </button>
+  </div>
+</div>
+
+<!-- Modale urgence -->
+<div class="modal-overlay" *ngIf="showUrgenceModal" (click)="fermerModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>⚠️ Signaler une urgence</h3>
+    <p>Patient : <strong>{{ patient.prenom }} {{ patient.nom }}</strong></p>
+    <div class="form-group">
+      <label>Motif de l'urgence *</label>
+      <textarea [(ngModel)]="motifUrgence"
+                placeholder="Décrire l'urgence médicale..."
+                rows="3"></textarea>
+    </div>
+    <div class="modal__actions">
+      <button class="btn btn--secondary" (click)="fermerModal()">Annuler</button>
+      <button class="btn btn--danger"
+              [disabled]="!motifUrgence.trim()"
+              (click)="confirmerUrgence()">
+        Confirmer l'urgence
+      </button>
+    </div>
+  </div>
+</div>

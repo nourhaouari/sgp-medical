@@ -1,0 +1,228 @@
+<!-- patient-detail.component.html -->
+<div class="patient-detail fade-in" *ngIf="patient; else chargement">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/patients">Patients</a>
+    <span>›</span>
+    <span>{{ patient.prenom }} {{ patient.nom }}</span>
+  </nav>
+
+  <!-- En-tête patient -->
+  <div class="detail-header">
+    <div class="detail-header__avatar"
+         [ngStyle]="{'background': patient.niveauUrgence === 'rouge' ? '#e74c3c'
+                                 : patient.niveauUrgence === 'orange' ? '#e67e22'
+                                 : patient.niveauUrgence === 'jaune' ? '#f39c12' : '#27ae60'}">
+      {{ patient.prenom[0] }}{{ patient.nom[0] }}
+    </div>
+    <div class="detail-header__info">
+      <h1>{{ patient.prenom }} {{ patient.nom }}</h1>
+      <div class="detail-header__meta">
+        <span>{{ patient.dateNaissance | date:'dd/MM/yyyy' }}</span>
+        <span>·</span>
+        <span>{{ patient.dateNaissance | age }} ans</span>
+        <span>·</span>
+        <span>{{ patient.sexe === 'M' ? 'Masculin' : patient.sexe === 'F' ? 'Féminin' : 'Autre' }}</span>
+        <span *ngIf="patient.groupeSanguin">·</span>
+        <span *ngIf="patient.groupeSanguin" class="groupe-sanguin">{{ patient.groupeSanguin }}</span>
+      </div>
+      <div class="detail-header__ins">
+        INS :
+        <span [appSensitiveData]="!estMedecin" [patientId]="patient.id">
+          {{ patient.ins | insFormat }}
+        </span>
+      </div>
+    </div>
+    <div class="detail-header__badges">
+      <span class="badge" [ngClass]="'badge--' + (patient.niveauUrgence ?? 'gris')">
+        {{ patient.niveauUrgence ?? 'Non évalué' | titlecase }}
+      </span>
+      <span class="badge" [ngClass]="'badge--' + patient.statut">{{ patient.statut }}</span>
+    </div>
+    <div class="detail-header__actions">
+      <a [routerLink]="['/patients', patient.id, 'modifier']" class="btn btn--secondary">
+        ✏️ Modifier
+      </a>
+      <button class="btn btn--secondary" (click)="retourListe()">
+        ← Retour
+      </button>
+    </div>
+  </div>
+
+  <!-- Alerte allergies -->
+  <div class="alert alert--warning" *ngIf="patient.allergies.length > 0">
+    ⚠️ <strong>Allergies déclarées :</strong>
+    <span *ngFor="let a of patient.allergies; let last = last">
+      {{ a.substance }} ({{ a.severite }})<span *ngIf="!last">, </span>
+    </span>
+  </div>
+
+  <!-- Onglets de navigation -->
+  <div class="tabs">
+    <button class="tab" [class.tab--active]="ongletActif === 'resume'" (click)="changerOnglet('resume')">Résumé</button>
+    <button class="tab" [class.tab--active]="ongletActif === 'constantes'" (click)="changerOnglet('constantes')">Constantes</button>
+    <button class="tab" [class.tab--active]="ongletActif === 'antecedents'" (click)="changerOnglet('antecedents')">Antécédents</button>
+    <button class="tab" [class.tab--active]="ongletActif === 'traitements'" (click)="changerOnglet('traitements')">Traitements</button>
+    <button class="tab" [class.tab--active]="ongletActif === 'contact'" (click)="changerOnglet('contact')">Contact</button>
+  </div>
+
+  <!-- Contenu des onglets -->
+  <div class="tab-content">
+
+    <!-- Résumé -->
+    <div *ngIf="ongletActif === 'resume'" class="tab-pane">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card__header"><h4 class="card__title">Constantes récentes</h4></div>
+          <div *ngIf="patient.dernieresConstantes as c; else pasDeConstantes">
+            <div class="constante-row" [ngClass]="{'valeur-critique': c.saturationO2 && c.saturationO2 < 90}">
+              <span>SpO₂</span><strong>{{ c.saturationO2 ?? 'N/A' }} %</strong>
+            </div>
+            <div class="constante-row" [ngClass]="{'valeur-critique': c.tensionSystolique && c.tensionSystolique > 180}">
+              <span>Tension artérielle</span><strong>{{ c.tensionSystolique }}/{{ c.tensionDiastolique }} mmHg</strong>
+            </div>
+            <div class="constante-row">
+              <span>Fréquence cardiaque</span><strong>{{ c.frequenceCardiaque ?? 'N/A' }} bpm</strong>
+            </div>
+            <div class="constante-row">
+              <span>Température</span><strong>{{ c.temperature ?? 'N/A' }} °C</strong>
+            </div>
+            <div class="constante-row" *ngIf="imc">
+              <span>IMC</span><strong>{{ imc | number:'1.1-1' }} kg/m² — {{ labelIMC }}</strong>
+            </div>
+            <div class="constante-row text-muted text-sm">
+              <span>Mesuré le</span><span>{{ c.dateMesure | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+          <ng-template #pasDeConstantes>
+            <p class="text-muted">Aucune constante enregistrée</p>
+          </ng-template>
+        </div>
+
+        <div class="card">
+          <div class="card__header"><h4 class="card__title">Allergies</h4></div>
+          <div *ngIf="patient.allergies.length > 0; else aucuneAllergie">
+            <div class="allergie-item" *ngFor="let a of patient.allergies">
+              <span class="badge" [ngClass]="'badge--' + (a.severite === 'severe' ? 'rouge' : a.severite === 'moderee' ? 'orange' : 'jaune')">
+                {{ a.severite }}
+              </span>
+              <div>
+                <strong>{{ a.substance }}</strong>
+                <p class="text-sm text-muted">{{ a.reaction }}</p>
+              </div>
+            </div>
+          </div>
+          <ng-template #aucuneAllergie>
+            <p class="text-muted">Aucune allergie connue déclarée ✓</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Constantes -->
+    <div *ngIf="ongletActif === 'constantes'" class="tab-pane">
+      <div class="card" *ngIf="patient.dernieresConstantes as c">
+        <h4>Dernières constantes vitales</h4>
+        <table class="table">
+          <thead><tr><th>Paramètre</th><th>Valeur</th><th>Unité</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Saturation O₂</td>
+              <td [ngClass]="{'valeur-critique': c.saturationO2 && c.saturationO2 < 90, 'valeur-attention': c.saturationO2 && c.saturationO2 < 95}">
+                {{ c.saturationO2 ?? 'N/A' }}</td>
+              <td>%</td>
+              <td>{{ c.saturationO2 && c.saturationO2 < 90 ? '🔴 Critique' : c.saturationO2 && c.saturationO2 < 95 ? '🟠 Attention' : '🟢 Normal' }}</td>
+            </tr>
+            <tr>
+              <td>Tension systolique</td>
+              <td [ngClass]="{'valeur-critique': c.tensionSystolique && c.tensionSystolique > 180}">
+                {{ c.tensionSystolique ?? 'N/A' }}</td>
+              <td>mmHg</td>
+              <td>{{ c.tensionSystolique && c.tensionSystolique > 180 ? '🔴 HTA sévère' : c.tensionSystolique && c.tensionSystolique > 140 ? '🟡 Élevée' : '🟢 Normal' }}</td>
+            </tr>
+            <tr>
+              <td>Fréquence cardiaque</td>
+              <td>{{ c.frequenceCardiaque ?? 'N/A' }}</td>
+              <td>bpm</td>
+              <td>{{ c.frequenceCardiaque && (c.frequenceCardiaque < 50 || c.frequenceCardiaque > 100) ? '🟡 Hors norme' : '🟢 Normal' }}</td>
+            </tr>
+            <tr>
+              <td>Température</td>
+              <td [ngClass]="{'valeur-attention': c.temperature && c.temperature > 38}">
+                {{ c.temperature ?? 'N/A' }}</td>
+              <td>°C</td>
+              <td>{{ c.temperature && c.temperature > 38 ? '🟡 Fièvre' : '🟢 Apyrexie' }}</td>
+            </tr>
+            <tr *ngIf="c.poids && c.taille">
+              <td>IMC calculé</td>
+              <td>{{ imc | number:'1.1-1' }}</td>
+              <td>kg/m²</td>
+              <td>{{ labelIMC }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Antécédents -->
+    <div *ngIf="ongletActif === 'antecedents'" class="tab-pane">
+      <div class="card">
+        <div class="card__header"><h4 class="card__title">Antécédents médicaux</h4></div>
+        <ul class="antecedent-list" *ngIf="patient.antecedents.length > 0; else aucunAntecedent">
+          <li *ngFor="let a of patient.antecedents">{{ a }}</li>
+        </ul>
+        <ng-template #aucunAntecedent>
+          <p class="text-muted">Aucun antécédent renseigné</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Traitements -->
+    <div *ngIf="ongletActif === 'traitements'" class="tab-pane">
+      <div class="card">
+        <div class="card__header"><h4 class="card__title">Traitements en cours</h4></div>
+        <ul class="traitement-list" *ngIf="patient.traitementEnCours.length > 0; else aucunTraitement">
+          <li *ngFor="let t of patient.traitementEnCours; let impair = odd" [class.impair]="impair">
+            💊 {{ t }}
+          </li>
+        </ul>
+        <ng-template #aucunTraitement>
+          <p class="text-muted">Aucun traitement en cours</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div *ngIf="ongletActif === 'contact'" class="tab-pane">
+      <div class="card">
+        <div class="card__header"><h4 class="card__title">Coordonnées</h4></div>
+        <div class="contact-grid">
+          <div class="contact-item">
+            <span class="label">Téléphone</span>
+            <span [appSensitiveData]="!estMedecin" [patientId]="patient.id">{{ patient.telephone }}</span>
+          </div>
+          <div class="contact-item" *ngIf="patient.email">
+            <span class="label">Email</span>
+            <span [appSensitiveData]="!estMedecin" [patientId]="patient.id">{{ patient.email }}</span>
+          </div>
+          <div class="contact-item">
+            <span class="label">Adresse</span>
+            <div>
+              <div>{{ patient.adresse.ligne1 }}</div>
+              <div *ngIf="patient.adresse.ligne2">{{ patient.adresse.ligne2 }}</div>
+              <div>{{ patient.adresse.codePostal }} {{ patient.adresse.ville }}</div>
+              <div>{{ patient.adresse.pays }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #chargement>
+  <div class="loading-state">
+    <p>Chargement du dossier patient...</p>
+  </div>
+</ng-template>

@@ -1,0 +1,200 @@
+<!-- patient-form.component.html -->
+<div class="patient-form-page fade-in">
+  <div class="form-header">
+    <h1>{{ modeEdition ? '✏️ Modifier le patient' : '➕ Nouveau patient' }}</h1>
+    <p class="text-muted">{{ modeEdition ? 'Mettre à jour les informations du dossier' : 'Créer un nouveau dossier patient' }}</p>
+  </div>
+
+  <form [formGroup]="patientForm" (ngSubmit)="onSoumettre()" novalidate>
+
+    <!-- Section Identité -->
+    <div class="form-section">
+      <h3 class="form-section__title">🪪 Identité</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nom *</label>
+          <input formControlName="nom" type="text" placeholder="DUPONT">
+          <span class="form-error" *ngIf="getErreur('nom')">{{ getErreur('nom') }}</span>
+        </div>
+        <div class="form-group">
+          <label>Prénom *</label>
+          <input formControlName="prenom" type="text" placeholder="Jean">
+          <span class="form-error" *ngIf="getErreur('prenom')">{{ getErreur('prenom') }}</span>
+        </div>
+        <div class="form-group">
+          <label>Date de naissance *</label>
+          <input formControlName="dateNaissance" type="date">
+          <span class="form-error" *ngIf="getErreur('dateNaissance')">{{ getErreur('dateNaissance') }}</span>
+        </div>
+        <div class="form-group">
+          <label>Sexe *</label>
+          <select formControlName="sexe">
+            <option value="">-- Sélectionner --</option>
+            <option value="M">Masculin</option>
+            <option value="F">Féminin</option>
+            <option value="I">Indéterminé</option>
+          </select>
+          <span class="form-error" *ngIf="getErreur('sexe')">{{ getErreur('sexe') }}</span>
+        </div>
+        <div class="form-group form-group--wide">
+          <label>INS (Identité Nationale de Santé) *</label>
+          <input formControlName="ins" type="text" placeholder="1850612075047" maxlength="15">
+          <span class="form-help">13 chiffres commençant par 1 (homme) ou 2 (femme)</span>
+          <span class="form-error" *ngIf="getErreur('ins')">{{ getErreur('ins') }}</span>
+        </div>
+        <div class="form-group">
+          <label>Groupe sanguin</label>
+          <select formControlName="groupeSanguin">
+            <option value="">Inconnu</option>
+            <option *ngFor="let g of ['A+','A-','B+','B-','AB+','AB-','O+','O-']" [value]="g">{{ g }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Coordonnées -->
+    <div class="form-section">
+      <h3 class="form-section__title">📞 Coordonnées</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input formControlName="telephone" type="tel" placeholder="06 12 34 56 78">
+          <span class="form-error" *ngIf="getErreur('telephone')">{{ getErreur('telephone') }}</span>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input formControlName="email" type="email" placeholder="patient@email.fr">
+          <span class="form-error" *ngIf="getErreur('email')">{{ getErreur('email') }}</span>
+        </div>
+      </div>
+
+      <!-- Adresse (FormGroup imbriqué) -->
+      <div formGroupName="adresse" class="form-grid">
+        <div class="form-group form-group--wide">
+          <label>Adresse ligne 1 *</label>
+          <input formControlName="ligne1" type="text" placeholder="12 Rue de la Paix">
+        </div>
+        <div class="form-group form-group--wide">
+          <label>Adresse ligne 2</label>
+          <input formControlName="ligne2" type="text" placeholder="Appartement, bâtiment...">
+        </div>
+        <div class="form-group">
+          <label>Code postal *</label>
+          <input formControlName="codePostal" type="text" placeholder="75001" maxlength="5">
+        </div>
+        <div class="form-group">
+          <label>Ville *</label>
+          <input formControlName="ville" type="text" placeholder="Paris">
+        </div>
+        <div class="form-group">
+          <label>Pays *</label>
+          <input formControlName="pays" type="text" placeholder="France">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Médical -->
+    <div class="form-section">
+      <h3 class="form-section__title">🏥 Informations médicales</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Statut *</label>
+          <select formControlName="statut">
+            <option value="actif">Actif</option>
+            <option value="inactif">Inactif</option>
+            <option value="transfere">Transféré</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Niveau d'urgence</label>
+          <select formControlName="niveauUrgence">
+            <option value="vert">🟢 CCMU 1 — Stable</option>
+            <option value="jaune">🟡 CCMU 2 — Peu grave</option>
+            <option value="orange">🟠 CCMU 3 — Grave</option>
+            <option value="rouge">🔴 CCMU 4/5 — URGENT</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Antécédents (FormArray) -->
+      <div class="form-array-section">
+        <div class="form-array-header">
+          <h4>Antécédents médicaux</h4>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="ajouterAntecedent()">
+            + Ajouter
+          </button>
+        </div>
+        <div formArrayName="antecedents">
+          <div *ngFor="let ctrl of antecedents.controls; let i = index" class="form-array-row">
+            <input [formControlName]="i" type="text" placeholder="Ex: Diabète type 2, HTA, Asthme...">
+            <button type="button" class="btn btn--danger btn--sm" (click)="antecedents.removeAt(i)">✕</button>
+          </div>
+        </div>
+        <p class="form-help" *ngIf="antecedents.length === 0">Aucun antécédent renseigné</p>
+      </div>
+
+      <!-- Traitements (FormArray) -->
+      <div class="form-array-section">
+        <div class="form-array-header">
+          <h4>Traitements en cours</h4>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="ajouterTraitement()">
+            + Ajouter
+          </button>
+        </div>
+        <div formArrayName="traitementEnCours">
+          <div *ngFor="let ctrl of traitements.controls; let i = index" class="form-array-row">
+            <input [formControlName]="i" type="text" placeholder="Ex: Metformine 500mg matin">
+            <button type="button" class="btn btn--danger btn--sm" (click)="traitements.removeAt(i)">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Allergies (FormArray de FormGroup) -->
+      <div class="form-array-section">
+        <div class="form-array-header">
+          <h4>⚠️ Allergies</h4>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="ajouterAllergie()">
+            + Ajouter une allergie
+          </button>
+        </div>
+        <div formArrayName="allergies">
+          <div *ngFor="let ctrl of allergies.controls; let i = index"
+               [formGroupName]="i" class="allergie-group">
+            <div class="form-grid allergie-grid">
+              <div class="form-group">
+                <label>Substance *</label>
+                <input formControlName="substance" placeholder="Pénicilline, Aspirine...">
+              </div>
+              <div class="form-group">
+                <label>Réaction *</label>
+                <input formControlName="reaction" placeholder="Urticaire, choc...">
+              </div>
+              <div class="form-group">
+                <label>Sévérité *</label>
+                <select formControlName="severite">
+                  <option value="legere">Légère</option>
+                  <option value="moderee">Modérée</option>
+                  <option value="severe">Sévère</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" class="btn btn--danger btn--sm allergie-remove"
+                    (click)="allergies.removeAt(i)">✕ Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn--secondary" (click)="annuler()">
+        Annuler
+      </button>
+      <button type="submit"
+              class="btn btn--primary"
+              [disabled]="patientForm.invalid || soumissionEnCours">
+        {{ modeEdition ? '💾 Enregistrer les modifications' : '✅ Créer le patient' }}
+      </button>
+    </div>
+  </form>
+</div>

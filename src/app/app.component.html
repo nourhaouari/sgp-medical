@@ -1,0 +1,62 @@
+<!-- src/app/app.component.html -->
+<div class="app-shell">
+
+  <!-- Barre de navigation principale -->
+  <nav class="navbar" *ngIf="utilisateur">
+    <div class="navbar__brand">
+      <span class="navbar__logo">🏥</span>
+      <span class="navbar__title">SGP Medical</span>
+      <span class="navbar__subtitle">Syst. Gestion Patients</span>
+    </div>
+
+    <div class="navbar__links">
+      <a routerLink="/tableau-de-bord"
+         routerLinkActive="navbar__link--active"
+         [routerLinkActiveOptions]="{exact: true}"
+         class="navbar__link">
+        📊 Tableau de bord
+      </a>
+      <a routerLink="/patients"
+         routerLinkActive="navbar__link--active"
+         class="navbar__link">
+        👥 Patients
+      </a>
+    </div>
+
+    <div class="navbar__user">
+      <span class="user-badge">
+        <span class="user-badge__avatar">
+          {{ utilisateur.prenom[0] }}{{ utilisateur.nom[0] }}
+        </span>
+        <span class="user-badge__info">
+          <span class="user-badge__name">{{ utilisateur.prenom }} {{ utilisateur.nom }}</span>
+          <span class="user-badge__role">{{ utilisateur.role | titlecase }}</span>
+        </span>
+      </span>
+    </div>
+  </nav>
+
+  <!-- Zone de notifications toast -->
+  <div class="notifications-container" *ngIf="notifications.length > 0">
+    <div
+      *ngFor="let notif of notifications"
+      class="toast"
+      [ngClass]="'toast--' + notif.type"
+    >
+      <span class="toast__icon">
+        {{ notif.type === 'success' ? '✅'
+         : notif.type === 'error' ? '❌'
+         : notif.type === 'warning' ? '⚠️'
+         : notif.type === 'urgence' ? '🚨' : 'ℹ️' }}
+      </span>
+      <span class="toast__message">{{ notif.message }}</span>
+      <button class="toast__close" (click)="fermerNotification(notif.id)">✕</button>
+    </div>
+  </div>
+
+  <!-- Contenu principal (router outlet) -->
+  <main class="main-content" [class.main-content--no-nav]="!utilisateur">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
