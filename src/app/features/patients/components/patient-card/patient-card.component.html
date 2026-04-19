@@ -54,7 +54,7 @@
 
   <!-- Allergies -->
   <div class="patient-card__allergies" *ngIf="patient.allergies.length > 0">
-    <span class="allergie-icon" [title]="patient.allergies.map(a => a.substance).join(', ')">
+    <span class="allergie-icon" [title]="allergiesTitle">
       ⚠️ {{ patient.allergies.length }} allergie{{ patient.allergies.length > 1 ? 's' : '' }}
       <span class="allergie-detail">
         <span *ngFor="let a of patient.allergies; let last = last">

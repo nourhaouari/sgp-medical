@@ -83,8 +83,8 @@ export const PATIENTS_DEMO: Patient[] = [
   {
     id: '1',
     ins: '1850612075047',
-    nom: 'DUPONT',
-    prenom: 'Jean',
+    nom: 'AHMED',
+    prenom: 'Youssef',
     dateNaissance: new Date('1985-06-12'),
     sexe: 'M',
     groupeSanguin: 'A+',
@@ -95,7 +95,7 @@ export const PATIENTS_DEMO: Patient[] = [
       pays: 'France'
     },
     telephone: '06 12 34 56 78',
-    email: 'jean.dupont@email.fr',
+    email: 'youssef.ahmed@email.fr',
     medecinTraitantId: 'DR001',
     statut: 'actif',
     niveauUrgence: 'vert',
@@ -118,8 +118,8 @@ export const PATIENTS_DEMO: Patient[] = [
   {
     id: '2',
     ins: '2920315044021',
-    nom: 'MARTIN',
-    prenom: 'Sophie',
+    nom: 'BENALI',
+    prenom: 'Fatima',
     dateNaissance: new Date('1992-03-15'),
     sexe: 'F',
     groupeSanguin: 'O-',
@@ -130,7 +130,7 @@ export const PATIENTS_DEMO: Patient[] = [
       pays: 'France'
     },
     telephone: '06 98 76 54 32',
-    email: 'sophie.martin@email.fr',
+    email: 'fatima.benali@email.fr',
     medecinTraitantId: 'DR002',
     statut: 'actif',
     niveauUrgence: 'orange',
@@ -160,8 +160,8 @@ export const PATIENTS_DEMO: Patient[] = [
   {
     id: '3',
     ins: '1560819034512',
-    nom: 'BERNARD',
-    prenom: 'Michel',
+    nom: 'KARIM',
+    prenom: 'Omar',
     dateNaissance: new Date('1956-08-19'),
     sexe: 'M',
     groupeSanguin: 'B+',
@@ -207,8 +207,8 @@ export const PATIENTS_DEMO: Patient[] = [
   {
     id: '4',
     ins: '2780422056789',
-    nom: 'LEROY',
-    prenom: 'Marie-Claire',
+    nom: 'MANSOUR',
+    prenom: 'Amina',
     dateNaissance: new Date('1978-04-22'),
     sexe: 'F',
     groupeSanguin: 'AB+',
@@ -219,7 +219,7 @@ export const PATIENTS_DEMO: Patient[] = [
       pays: 'France'
     },
     telephone: '04 91 23 45 67',
-    email: 'mclaire.leroy@email.fr',
+    email: 'amina.mansour@email.fr',
     medecinTraitantId: 'DR003',
     statut: 'actif',
     niveauUrgence: 'jaune',

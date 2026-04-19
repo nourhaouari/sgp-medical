@@ -12,9 +12,9 @@ export class AuthService {
   constructor() {
     const demoUser: Utilisateur = {
       id: 'USR001',
-      nom: 'BARBARIA',
-      prenom: 'Sabri',
-      email: 'sabri.barbaria@hopital.fr',
+      nom: 'Tbib',
+      prenom: 'Tbib',
+      email: 'tbib@hopital.fr',
       role: 'medecin',
       dateConnexion: new Date()
     };

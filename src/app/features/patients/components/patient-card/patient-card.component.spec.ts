@@ -13,8 +13,8 @@ describe('PatientCardComponent', () => {
   const patientDemo: Patient = {
     id: '1',
     ins: '1850612075047',
-    nom: 'DUPONT',
-    prenom: 'Jean',
+    nom: 'AHMED',
+    prenom: 'Youssef',
     dateNaissance: new Date('1985-06-12'),
     sexe: 'M',
     groupeSanguin: 'A+',
@@ -53,7 +53,7 @@ describe('PatientCardComponent', () => {
   });
 
   it('devrait retourner les initiales correctes', () => {
-    expect(component.initiales).toBe('JD');
+    expect(component.initiales).toBe('YA');
   });
 
   it('devrait émettre patientSelected au clic', () => {

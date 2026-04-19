@@ -42,6 +42,11 @@ export class PatientCardComponent implements OnInit, OnDestroy {
     return map[this.patient.niveauUrgence ?? 'vert'] ?? '#95a5a6';
   }
 
+  get allergiesTitle(): string {
+    if (!this.patient || !this.patient.allergies) return '';
+    return this.patient.allergies.map(a => a.substance).join(', ');
+  }
+
   ngOnInit(): void {
     console.log('[PatientCard] Initialisée :', this.patient.ins);
   }
